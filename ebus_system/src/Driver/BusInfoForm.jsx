@@ -1,0 +1,299 @@
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { useState } from "react";
+import { db } from "../../firebase";
+import { useNavigate } from "react-router-dom";
+// import { db } from "../firebase";
+// import { collection, addDoc } from "firebase/firestore";
+
+const BusInfoForm = () => {
+  let navigate=useNavigate();
+  let drivertoken=localStorage.getItem("TOKEN")
+
+
+  const [busInfo, setBusInfo] =  useState({
+    bus_no: "",
+    bus_type: [],
+    source:"",
+    destination:"",
+    duration:"",
+    pickup_time:"",
+    pickup_date:"",
+    price:"",
+    rating:"",
+    drivername: "",
+    email:"",
+    phone_no:"",
+    boarding_points: [],
+    dropping_points: []
+  });
+
+  const [boardingPoint, setBoardingPoint] = useState("");
+  const [droppingPoint, setDroppingPoint] = useState("");
+
+  const busTypes = ["AC", "Non-AC", "Sleeper", "Seater", "Electric", "Double-Decker"]; // Available bus types
+
+  let{bus_no,bus_type,source,destination,duration,pickup_time,pickup_date,price,rating,drivername,email,phone_no,boarding_points,dropping_points}=busInfo;
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+
+    if (type === "checkbox") {
+      setBusInfo((prevData) => ({
+        ...prevData,
+        bus_type: checked
+          ? [...prevData.bus_type, value] // Add type if checked
+          : prevData.bus_type.filter((type) => type !== value), // Remove if unchecked
+      }));
+
+      console.log(busInfo);
+      console.log("*0***0*0*");
+      
+    } else {
+      setBusInfo({ ...busInfo, [name]: value });
+      console.log(busInfo);
+      
+    }
+  };
+
+
+  const addBoardingPoint = () => {
+    if (boardingPoint.trim() !== "") {
+      setBusInfo((prevData) => ({
+        ...prevData,
+        boarding_points: [...prevData.boarding_points, boardingPoint],
+      }));
+      setBoardingPoint("");
+    }
+  };
+
+  const addDroppingPoint = () => {
+    if (droppingPoint.trim() !== "") {
+      setBusInfo((prevData) => ({
+        ...prevData,
+        dropping_points: [...prevData.dropping_points, droppingPoint],
+      }));
+      setDroppingPoint("");
+    }
+  };
+
+  const removeBoardingPoint = (index) => {
+    setBusInfo((prevData) => ({
+      ...prevData,
+      boarding_points: prevData.boarding_points.filter((_, i) => i !== index),
+    }));
+  };
+
+  const removeDroppingPoint = (index) => {
+    setBusInfo((prevData) => ({
+      ...prevData,
+      dropping_points: prevData.dropping_points.filter((_, i) => i !== index),
+    }));
+  };
+
+
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    console.log(busInfo);
+    
+    try {
+      if(bus_no !== "" && source !== "" && destination !== "" && duration !== "" && pickup_time !== "" && pickup_date !== "" && price !== "" && rating !== "" &&  drivername !== "" && email !== "" && phone_no !== ""){
+
+        const busRef = collection(db,"buses");
+        const busQuery = query(busRef,where("bus_no","==",bus_no));
+        const querySnapshot = await getDocs(busQuery);
+
+        const source_lower=source.toLowerCase();
+        const destination_lower=destination.toLowerCase();
+
+
+        if(!querySnapshot.empty){
+          alert("Bus No. is Already Exists. Please Add Another No.")
+        }
+        else{
+          await addDoc(busRef,{bus_no,bus_type,source,destination,source_lower,destination_lower,duration,pickup_time,pickup_date,price,rating,drivername,email,phone_no,boarding_points,dropping_points,travel_id:drivertoken,createdAt:new Date()});
+          alert("Bus information added successfully");
+          navigate("/driver/allbuses");
+        }
+       
+      }else{
+        alert("Please Fill Up All Details.");
+      }
+      
+    } catch (error) {
+      alert("Failed to add bus information: " + error.message);
+    }
+  };
+
+  return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 primary">
+        <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-8 max-w-sm w-full">
+          <h1 className="text-2xl font-bold text-center text-[#C40234] dark:text-white mb-6 uppercase">Bus Information Form</h1>
+          <form className="max-w-md mx-auto" onSubmit={handleSubmit}>
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="text" name="bus_no" id="bus_no" value={bus_no} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="bus_no" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Bus No.</label>
+              </div>
+
+              {/* Bus Type Checkbox Group */}
+              <div className="relative z-0 w-full mb-5 group">
+                <p className="text-sm text-primary dark:text-primary">Bus Type:</p>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  {busTypes.map((type) => (
+                    <label key={type} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        name="bus_type"
+                        value={type}
+                        checked={bus_type.includes(type)}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-600 bg-gray-100 border-primary rounded focus:ring-[#C40234] dark:focus:ring-[#C40234]"
+                      />
+                      <span className="text-sm text-primary dark:text-primary">{type}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="text" name="source" id="source" value={source} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="source" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Source</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="text" name="destination" id="destination" value={destination} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="destination" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Destination</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="text" name="duration" id="duration" value={duration} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="duration" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Duration</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="time" name="pickup_time" id="pickup_time" value={pickup_time} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="pickup_time" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Pickup Time</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="date" name="pickup_date" id="pickup_date" value={pickup_date} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="pickup_date" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Pickup Date</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="text" name="rating" id="rating" value={rating} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="rating" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Rating</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="text" name="price" id="price" value={price} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="price" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Price (Per Person)</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="text" name="drivername" id="floating_drivername" value={drivername} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="floating_drivername" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Driver Name</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="email" name="email" id="floating_email" value={email} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="floating_email" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-primary peer-focus:dark:text-primary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email Address</label>
+              </div>
+
+              <div className="relative z-0 w-full mb-5 group">
+                  <input type="tel" pattern="[0-9]{10}|[0-9]{3}-[0-9]{3}-[0-9]{4}" name="phone_no" id="floating_phone" value={phone_no} onChange={handleChange}
+                  className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-[#C40234] focus:outline-none focus:ring-0 focus:border-[#C40234] peer" placeholder=" " required />
+                  <label htmlFor="floating_phone" className="peer-focus:font-medium absolute text-sm text-primary dark:text-primary duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-[#C40234] peer-focus:dark:text-[#C40234] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone Number (123-456-7890)</label>
+              </div>
+
+              {/* Boarding Points */}
+              <div className="mb-5">
+                <p className="text-sm font-bold text-primary">Boarding Points:</p>
+                <div className="flex items-center space-x-2 mt-2">
+                  <input
+                    type="text"
+                    value={boardingPoint}
+                    onChange={(e) => setBoardingPoint(e.target.value)}
+                    placeholder="Add boarding point"
+                    className="block w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-[#C40234]"
+                  />
+                  <button
+                    type="button"
+                    onClick={addBoardingPoint}
+                    className="px-3 py-1 bg-[#C40234] text-white rounded-md hover:bg-[#a00028]"
+                  >
+                    Add
+                  </button>
+                </div>
+                <ul className="mt-2 space-y-1">
+                  {boarding_points.map((point, index) => (
+                    <li key={index} className="flex items-center justify-between text-sm">
+                      <span>{point}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeBoardingPoint(index)}
+                        className="text-red-500 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Dropping Points */}
+              <div className="mb-5">
+                <p className="text-sm font-bold text-primary">Dropping Points:</p>
+                <div className="flex items-center space-x-2 mt-2">
+                  <input
+                    type="text"
+                    value={droppingPoint}
+                    onChange={(e) => setDroppingPoint(e.target.value)}
+                    placeholder="Add dropping point"
+                    className="block w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-[#C40234]"
+                  />
+                  <button
+                    type="button"
+                    onClick={addDroppingPoint}
+                    className="px-3 py-1 bg-[#C40234] text-white rounded-md hover:bg-[#a00028]"
+                  >
+                    Add
+                  </button>
+                </div>
+                <ul className="mt-2 space-y-1">
+                  {dropping_points.map((point, index) => (
+                    <li key={index} className="flex items-center justify-between text-sm">
+                      <span>{point}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeDroppingPoint(index)}
+                        className="text-red-500 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+          
+            <div className="text-center">
+              <button type="submit" className="w-full uppercase cursor-pointer text-white primary hover:primary focus:ring-4 focus:outline-none focus:ring-[#C40234] font-medium rounded-lg  px-5 py-2.5 text-center dark:primary dark:hover:primary dark:focus:ring-[#C40234]">Submit</button>
+            </div>
+            
+          </form>
+        </div>
+      </div>
+
+  );
+};
+
+export default BusInfoForm;
