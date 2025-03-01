@@ -1,0 +1,40 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+.videoBlock{
+  width: 100%;
+  height: 100vh;
+  display: flex;
+}
+
+.left{
+  flex-basis: 60%;
+}
+
+.right{
+  flex-basis: 40%;
+}
+
+.leftVideo{
+  width: 1000px;
+  height: 480px;
+}
+
+.videoTitle{
+  margin-left: 80px;
+  font-size: 25px;
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  color: rgb(78, 134, 4);
+  /* text-decoration:underline; */
+  text-transform: uppercase;
+}
+
+.rightImage{
+  width: 300px;
+  height: 200px;
+  margin: 10px;
+}

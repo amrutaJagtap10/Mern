@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+body{
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+article{
+  background-color: rgb(255 131 127);
+  border: 1px solid rgb(58, 56, 56);
+  width: 90%;
+  margin: 20px auto;
+  /* display: flex;
+  flex-direction: column;
+  justify-content: center; */
+}
+
+article h1{
+  font-size: 32px;
+  color: whitesmoke;
+  text-transform: uppercase;
+  padding: 10px;
+}
+
+main{
+  display: flex;
+  gap: 20%;
+}
+
+form{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.form-group label{
+  color: whitesmoke;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-transform: uppercase;
+}
+
+.form-group input{
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid rgb(58, 56, 56) ;
+} 
+
+.form-group button{
+  background-color: crimson;
+  border: 1px solid rgb(69, 68, 68);
+  width: 60%;
+  padding: 10px;
+  margin: 20px 0;
+  color: whitesmoke;
+  border-radius: 10px;
+  font-size: 15px;
+}
+
+/* Css for todolist */
+.todo h2{
+  color: whitesmoke;
+  font-size: 18px;
+  text-transform: uppercase;
+  font-weight: 300;
+  padding: 10px;
+  border-bottom: 1px solid white;
+  text-align: center;
+}
+.todo table{
+  width: 100%;
+  padding: 10px;
+  border-collapse: collapse;
+}
+
+table tr,th,td{
+  border: 2px solid whitesmoke;
+  color: whitesmoke;
+  padding: 10px;
+}
+
+table button{
+  border: 1px solid rgb(58, 56, 56);
+  border-radius: 5px;
+  margin: 6px;
+  padding: 5px;
+  background-color: #27f3b8;
+}

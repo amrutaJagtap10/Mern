@@ -1,0 +1,156 @@
+*{
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+nav{
+  width: 100%;
+  background-color: #ff9a3c;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 10vh;
+  padding: 10px;
+  font-size: 25px;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+}
+
+.mainContainer{
+  display: flex;
+  justify-content: space-around;
+}
+/* Css for Form */
+
+.formBlock{
+  background-color: #ff9a3c;
+  width: 40%;
+  height: 500px;
+  border-radius: 5px;
+  margin: 40px 0;
+
+}
+
+.form-content{
+  margin: 20px;
+}
+
+.form-content label{
+  color: rgb(37, 36, 36);
+  display: block;
+  font-size: 20px;
+  margin-left: 18px;
+
+}
+
+.form-content input, textarea{
+  border: none;
+  border: 1px solid rgb(37, 36, 36);
+  width: 90%;
+  border-radius: 3px;
+  padding: 12px;
+  margin-left: 18px;
+}
+
+.form-content select{
+  border: none;
+  border: 1px solid rgb(37, 36, 36);
+  width: 90%;
+  border-radius: 3px;
+  padding: 10px;
+  margin-left: 18px;
+}
+
+.formBlock button{
+  border: none;
+  border: 1px solid rgb(37, 36, 36);
+  /* width: 90%; */
+  border-radius: 3px;
+  padding: 12px;
+  margin-left: 37px;
+  background-color: #79180b;
+  color: whitesmoke;
+  font-size: 15px;
+  font-weight: 600;
+  text-transform: uppercase;
+  /* text-align: center;
+  margin: auto; */
+}
+
+/* Css for display */
+
+.displaySection{
+  /* background-color: #ff9a3c; */
+  width: 50%;
+  height: 500px;
+  border-radius: 5px;
+  margin: 40px 0;
+  /* overflow: scroll; */
+}
+.selectedNotes{
+  /* margin: 20px; */
+}
+.selectDisplayBlock{
+  padding: 10px;
+  align-items: center;
+  background-color: #ff9a3c;
+}
+.selectDisplayBlock label{
+  color: rgb(37, 36, 36);
+  display: block;
+  font-size: 20px;
+  margin-left: 18px;
+  font-weight: 600;
+  /* background-color: #ff9a3c; */
+}
+
+.selectDisplayBlock input{
+  border: none;
+  border: 1px solid rgb(37, 36, 36);
+  border-radius: 3px;
+  padding: 12px;
+  margin-left: 18px;
+  
+}
+.selectDisplayBlock span{
+  font-size: 17px;
+}
+
+.displayContent{
+  margin: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+}
+
+.output{
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: black;
+  font-weight: 600;
+  border: 1px solid rgb(37, 36, 36);
+  padding: 10px;
+  background-color: #ff9a3c;
+}
+
+.output p, h1{
+  text-transform: capitalize;
+  /* padding: 10px; */
+}
+
+.output button{
+  border: none;
+  border: 1px solid rgb(37, 36, 36);
+  /* width: 90%; */
+  border-radius: 3px;
+  padding: 10px;
+  /* margin-left: 37px; */
+  background-color: #79180b;
+  color: whitesmoke;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 10px;
+}
